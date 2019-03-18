@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>스프링 부트로 계산기 만들기</title>
+    <script
+            src="http://code.jquery.com/jquery-3.3.1.js"
+            integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+            crossorigin="anonymous"></script>
+</head>
+<body>
+    <section>
+        <h1>스프링 부트로 계산기 만들기</h1>
+    </section>
+    <div>
+        <input id="num1" type="text" placeholder="첫번째 수 입력">
+        <input id="num2" type="text" placeholder="두번째 수 입력">
+        <input id="operator" type="text" placeholder="+,-,*,/ 입력">
+
+        <button onclick="calculation()">결과보기</button>
+        <div id="display-response">결과</div>
+    </div>
+    <script>
+        async function calculation() {
+            let num1 = $('#num1').val().trim();
+            let num2 = $('#num2').val().trim();
+            let operator = $('#operator').val().trim();
+
+            // null인지 체크하기
+            if(! num1 || num1 === '' || ! num2 || num2 === ''){
+                $('#display-response').html('입력해주세요.');
+                return;
+            }
+
+            // 숫자인지 체크하기
+            if(! ($.isNumeric(num1) || $.isNumeric(num2))){
+                $('#display-response').html('숫자를 정확하게 입력해주세요.');
+                return;
+            }
+
+            // 연산자인지 체크하기
+            if(! (operator == '+' || operator == '-' || operator == '*' || operator == '/')){
+                $('#display-response').html('연산자를 정확하게 입력해주세요.');
+                return;
+            }
+
+            try{
+                // URL에서는 공백을 +로 표현하기 때문에, +와 같은 문자를 보낼 때에는 encodeURIComponent()를 사용하기
+                let response = await $.get('/calculation?num1=' + num1 + '&num2=' + num2 + '&operator=' + encodeURIComponent(operator));
+
+                $('#display-response').html(JSON.stringify(response));
+            } catch(err){
+                $('#display-response').html(JSON.stringify(err));
+            }
+        }
+    </script>
+</body>
+</html>
